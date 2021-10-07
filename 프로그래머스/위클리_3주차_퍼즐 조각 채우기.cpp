@@ -38,7 +38,7 @@ void init(vector<vector<int>> &game_board, vector<vector<int>> &table){
     }
 }
 
-vector<posInfo> find_empty_board(int y, int x){
+vector<posInfo> find_empty_board(int y, int x){ //bfs
     
     vector<posInfo> v;
     v.push_back({y,x});
@@ -99,7 +99,7 @@ vector<posInfo> find_exist_table(int y, int x){
     return v;
 }
 
-void fit_to_zero(vector<posInfo> &v){
+void fit_to_zero(vector<posInfo> &v){ //모양을 왼쪽 위로 피팅시키기
     
     int min_y = v[0].y;
     int min_x = v[0].x;
@@ -127,26 +127,12 @@ bool compare(posInfo a, posInfo b){
     }
 }
 
-void rotate(vector<posInfo> &v){ //현재 height와 width
+void rotate(vector<posInfo> &v){ 
     int size = v.size();
-    for(int i=0;i<size;i++){
+    for(int i=0;i<size;i++){ //rotate
         int t = v[i].y;
         v[i].y = -v[i].x;
         v[i].x = t;
-    }
-    int min_y = v[0].y;
-    int max_y = min_y;
-    int max_x = v[0].x;
-    int min_x = max_x;
-    
-    for(int i=0;i<size;i++){
-        min_y = min(min_y, v[i].y);
-        min_x = min(min_x, v[i].x);
-    }
-    
-    for(int i=0;i<size;i++){
-        v[i].x -= min_x;
-        v[i].y -= max_y;
     }
 }
 
@@ -176,51 +162,22 @@ bool compare_b_t(vector<posInfo> b_vector, vector<posInfo> t_vector){
         return true;
     }
     
-    //90도 돌려서 체크
-    rotate(t_vector);
-    fit_to_zero(t_vector);
-    sort(t_vector.begin(), t_vector.end(), compare);
-    flag = true;
-    
-    for(int i=0;i<b_vector.size();i++){
-        if(b_vector[i].y != t_vector[i].y || b_vector[i].x != t_vector[i].x){
-            flag = false;
-            break;
+    for(int i=0;i<3;i++){
+        //90도 돌려서 체크
+        rotate(t_vector);
+        fit_to_zero(t_vector);
+        sort(t_vector.begin(), t_vector.end(), compare);
+        flag = true;
+
+        for(int i=0;i<b_vector.size();i++){
+            if(b_vector[i].y != t_vector[i].y || b_vector[i].x != t_vector[i].x){
+                flag = false;
+                break;
+            }
         }
-    }
-    if(flag == true){
-        return true;
-    }
-    
-    //90도 돌려서 체크
-    rotate(t_vector);
-    fit_to_zero(t_vector);
-    sort(t_vector.begin(), t_vector.end(), compare);
-    flag = true;
-    for(int i=0;i<b_vector.size();i++){
-        if(b_vector[i].y != t_vector[i].y || b_vector[i].x != t_vector[i].x){
-            flag = false;
-            break;
+        if(flag == true){
+            return true;
         }
-    }
-    if(flag == true){
-        return true;
-    }
-    
-    //90도 돌려서 체크
-    rotate(t_vector);
-    fit_to_zero(t_vector);
-    sort(t_vector.begin(), t_vector.end(), compare);
-    flag = true;
-    for(int i=0;i<b_vector.size();i++){
-        if(b_vector[i].y != t_vector[i].y || b_vector[i].x != t_vector[i].x){
-            flag = false;
-            break;
-        }
-    }
-    
-    if(flag == true){
-        return true;
     }
     
     return false;
